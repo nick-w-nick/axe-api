@@ -1,8 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction } from "express";
+import { IRequest, IResponse } from "../Interfaces";
 import { AcceptLanguageResolver } from "../Resolvers";
 import { getVersionByRequest } from "../Helpers";
 
-export default async (req: Request, res: Response, next: NextFunction) => {
+export default async (req: IRequest, res: IResponse, next: NextFunction) => {
   // Application configuration is need for the default setting.
   const version = await getVersionByRequest(req);
 

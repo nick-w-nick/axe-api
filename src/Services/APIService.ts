@@ -1,5 +1,5 @@
 import path from "path";
-import { LogLevels } from "../Enums";
+import { Frameworks, LogLevels } from "../Enums";
 import { IAPI, IApplicationConfig, IVersion } from "../Interfaces";
 import ModelListService from "./ModelListService";
 
@@ -18,6 +18,7 @@ class APIService {
         logLevel: LogLevels.INFO,
         prefix: "/api",
         database: {},
+        framework: Frameworks.Express
       },
     };
   }

@@ -2,7 +2,7 @@ import pluralize from "pluralize";
 import path from "path";
 import { StatusCodes } from "http-status-codes";
 import { Knex } from "knex";
-import { Express, Request, Response, NextFunction } from "express";
+import { NextFunction } from "express";
 import { paramCase, camelCase } from "change-case";
 import { GeneralHookResolver, TransactionResolver } from "../Resolvers";
 import {
@@ -11,6 +11,9 @@ import {
   IRelation,
   IRequestPack,
   IVersion,
+  IRequest,
+  IResponse,
+  IFramework,
 } from "../Interfaces";
 import { API_ROUTE_TEMPLATES } from "../constants";
 import { HandlerTypes, Relationships, HttpMethods } from "../Enums";
@@ -32,7 +35,7 @@ class RouterBuilder {
   }
 
   async build() {
-    const app = await IoCService.useByType<Express>("App");
+    const app = await IoCService.useByType<IFramework>("App");
     const logger = LogService.getInstance();
     const generalHooks: IGeneralHooks = await new GeneralHookResolver(
       this.version
@@ -44,7 +47,13 @@ class RouterBuilder {
 
     await this.createRoutesByModelTree();
 
-    logger.info(`[${this.version.name}] Express routes have been created.`);
+    logger.info(`[${this.version.name}] ${app._name} routes have been created.`);
+
+    if (generalHooks.onAfterInit) {
+      generalHooks.onAfterInit(app);
+    }
+
+    await this.createRoutesByModelTree();
 
     if (generalHooks.onAfterInit) {
       generalHooks.onAfterInit(app);
@@ -176,14 +185,14 @@ class RouterBuilder {
   private async addExpressRoute(
     handlerType: HandlerTypes,
     url: string,
-    middlewares: ((req: Request, res: Response, next: NextFunction) => void)[],
+    middlewares: ((req: IRequest, res: IResponse, next: NextFunction) => void)[],
     model: IModelService,
     parentModel: IModelService | null,
     relation: IRelation | null
   ) {
     const docs = DocumentationService.getInstance();
-    const app = await IoCService.useByType<Express>("App");
-    const handler = (req: Request, res: Response) => {
+    const app = await IoCService.useByType<IFramework>("App");
+    const handler = (req: IRequest, res: IResponse) => {
       this.requestHandler(handlerType, req, res, model, parentModel, relation);
     };
 
@@ -227,8 +236,8 @@ class RouterBuilder {
 
   private async requestHandler(
     handlerType: HandlerTypes,
-    req: Request,
-    res: Response,
+    req: IRequest,
+    res: IResponse,
     model: IModelService,
     parentModel: IModelService | null,
     relation: IRelation | null
@@ -274,7 +283,7 @@ class RouterBuilder {
     }
   }
 
-  private sendErrorAsResponse(res: Response, error: any) {
+  private sendErrorAsResponse(res: IResponse, error: any) {
     const type: string | undefined = error.type;
 
     switch (type) {

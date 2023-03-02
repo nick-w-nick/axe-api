@@ -132,3 +132,8 @@ export enum QueryFeature {
   WithHasOne = "with.hasOne",
   WithHasMany = "with.hasMany",
 }
+
+export enum Frameworks {
+  Express = "express",
+  Fastify = "fastify",
+}

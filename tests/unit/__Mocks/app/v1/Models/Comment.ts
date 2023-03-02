@@ -1,16 +1,20 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction } from "express";
 import { QueryFeature } from "../../../../../../src/Enums";
 import Model from "../../../../../../src/Model";
 import { allow } from "../../../../../../src/Services";
+import {
+  IRequest,
+  IResponse,
+} from "../../../../../../src/Interfaces";
 
 class Comment extends Model {
   get middlewares(): ((
-    req: Request,
-    res: Response,
+    req: IRequest,
+    res: IResponse,
     next: NextFunction
   ) => void)[] {
     return [
-      (req: Request, res: Response, next: NextFunction) => {
+      (req: IRequest, res: IResponse, next: NextFunction) => {
         next();
       },
     ];
