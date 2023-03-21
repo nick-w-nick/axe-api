@@ -11,17 +11,13 @@ import {
 import {
   IModelService,
   IRelation,
-  IRequestPack,
   IVersion,
 } from "../../../src/Interfaces";
-import { HandlerTypes, LogLevels, Relationships } from "../../../src/Enums";
+import { LogLevels, Relationships } from "../../../src/Enums";
 import User from "../__Mocks/app/v1/Models/User";
 import Post from "../__Mocks/app/v1/Models/Post";
 import PostLike from "../__Mocks/app/v1/Models/PostLike";
 import Comment from "../__Mocks/app/v1/Models/Comment";
-import HandlerFactory from "../../../src/Handlers/HandlerFactory";
-
-const waitForIt = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
 const userService = new ModelService("User", new User());
 const postService = new ModelService("Post", new Post());
@@ -44,23 +40,11 @@ const AppMock = {
   patch: jest.fn(),
   delete: jest.fn(),
 };
-const LogServiceMock = {
-  info: jest.fn(),
-};
 const ModelTreeMock: IModelService[] = [
   userService,
   postService,
   commentService,
 ];
-const ModelListServiceMock = {};
-const FoldersMock = {
-  App: path.join(__dirname, "..", "__Mocks"),
-};
-const ConfigMock = {
-  Application: {
-    transaction: false,
-  },
-};
 const DocumentationServiceMock = {
   push: jest.fn(),
 };
@@ -106,7 +90,7 @@ describe("RouteBuilder", () => {
 
     // Checking GETs
     const getURLs = AppMock.get.mock.calls.map((item) => item[0]);
-    expect(getURLs.length).toBe(8);
+    expect(getURLs.length).toBe(16);
     expect(getURLs.includes("/api/v1/users")).toBeTruthy();
     expect(getURLs.includes("/api/v1/users/:id")).toBeTruthy();
     expect(getURLs.includes("/api/v1/posts/:id")).toBeTruthy();
@@ -115,38 +99,9 @@ describe("RouteBuilder", () => {
 
     // Checking POSTSs
     const postURLs = AppMock.post.mock.calls.map((item) => item[0]);
-    expect(postURLs.length).toBe(4);
+    expect(postURLs.length).toBe(8);
     expect(postURLs.includes("/api/v1/users")).toBeTruthy();
     expect(postURLs.includes("/api/v1/posts")).toBeTruthy();
     expect(postURLs.includes("/api/v1/posts/:postId/likes")).toBeTruthy();
-
-    // Example handler
-    const handler = AppMock.post.mock.calls[0][2] as (
-      req: Request,
-      res: Response
-    ) => void;
-
-    // Response mock
-    // const response = {
-    //   status: jest.fn(() => {
-    //     return response;
-    //   }),
-    //   json: jest.fn(),
-    // };
-    // // Call the handler
-    // handler({} as Request, response as unknown as Response);
-
-    // // Wait for the async call
-    // await waitForIt(10);
-
-    // // Test the mock function has been called
-    // expect(handlerFunctionMock.mock.calls.length).toBe(1);
-
-    // // Should be called correctly
-    // const params: IRequestPack = (
-    //   handlerFunctionMock.mock.calls[0] as any
-    // )[0] as IRequestPack;
-    // expect(params.handlerType).toBe(HandlerTypes.INSERT);
-    // expect(params.model.name).toBe("User");
   });
 });
