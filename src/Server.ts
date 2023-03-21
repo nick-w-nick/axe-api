@@ -71,9 +71,8 @@ class Server {
     IoCService.singleton("App", async () => await IoCService.use("Framework"));
 
     IoCService.singleton("LogService", async () => {
-      const config = await IoCService.use("Config");
       return new LogService(
-        (config.Application as IApplicationConfig).logLevel
+        (api.config as IApplicationConfig).logLevel
       );
     });
   }
